@@ -8,7 +8,8 @@
     "start": "node dist/server.js",
     "dev": "nodemon --exec babel-node src/server.js",
     "build": "babel src -d dist",
-    "test": "jest"
+    "test": "jest",
+    "prod": "node dist/server.js"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
