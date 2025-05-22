@@ -2,8 +2,7 @@
 
 This is the backend API for the LessonLink platform, a modern web application designed to streamline lesson planning for K-12 educators.
 
-## Names 
-Abby, 
+Hosted Link: https://project-api-lessonlink.onrender.com
 
 ## Project Structure
 
