@@ -67,22 +67,6 @@ export const signup = async ({ username, email, password }) => {
   return tokenForUser(user);
 };
 
-// export async function createUser(userFields) {
-//   const user = new User();
-//   user.email = userFields.email;
-//   user.password = userFields.password; // need to hash this
-//   user.role = userFields.role;
-//   user.firstName = userFields.firstName;
-//   user.lastName = userFields.lastName;
-//   user.school = userFields.school;
-//   user.folders = userFields.folders;
-//   try {
-//     const saveduser = await user.save();
-//     return saveduser;
-//   } catch (error) {
-//     throw new Error(`create user error: ${error.message}`);
-//   }
-// }
 export async function getUsers() {
   try {
     const users = await User.find({});
