@@ -1,22 +1,34 @@
 import express from 'express';
-import { verifyToken, checkRole } from '../middlewares/authMiddleware.js';
+
+import { requireSignin } from '../services/passport.js';
+import * as UserController from '../controllers/userController.js';
 
 const router = express.Router();
 
-// Auth routes
-router.post('/login', (req, res) => {
-  // TODO: Implement login logic
-  res.json({ message: 'Login route' });
-});
+const handleSignin = async (req, res) => {
+  try {
+    console.log(req);
+    const token = UserController.signin(req.user);
+    res.json({ token, email: req.user.email });
+  } catch (error) {
+    res.status(422).send({ error: error.toString() });
+  }
+};
 
-router.post('/register', (req, res) => {
-  // TODO: Implement registration logic
-  res.json({ message: 'Register route' });
-});
+const handleSignup = async (req, res) => {
+  try {
+    const token = await UserController.signup(req.body);
+    console.log(req);
+    res.json({ token, email: req.body.email });
+  } catch (error) {
+    res.status(422).send({ error: error.toString() });
+  }
+};
 
-router.get('/me', verifyToken, (req, res) => {
-  // TODO: Implement get current user logic
-  res.json({ message: 'Get current user route' });
-});
+router.route('/signup')
+  .post(handleSignup);
 
-export default router; 
+router.route('/signin')
+  .post(requireSignin, handleSignin);
+
+export default router;

@@ -24,13 +24,13 @@
  * - Role-based access control
  */
 import mongoose, { Schema } from 'mongoose';
+import bcrypt from 'bcryptjs';
 
 const UserSchema = new Schema({
   email: String,
   password: String,
   role: String,
-  firstName: String,
-  lastName: String,
+  username: String,
   school: String,
   // folder is a list of dictionaries, key=name of the folder, value=id of lesson
   folders: {
@@ -49,6 +49,29 @@ const UserSchema = new Schema({
   toObject: { virtuals: true },
   toJSON: { virtuals: true },
 });
+
+UserSchema.pre('save', async function beforeUserSave(next) {
+  // get access to the user model
+  const user = this;
+
+  if (!user.isModified('password')) return next();
+
+  try {
+    // salt, hash, then set password to hash
+    const salt = await bcrypt.genSalt(10);
+    const hash = await bcrypt.hash(user.password, salt);
+    user.password = hash;
+    return next();
+  } catch (error) {
+    return next(error);
+  }
+});
+
+// note use of named function rather than arrow notation, required here
+UserSchema.methods.comparePassword = async function comparePassword(candidatePassword) {
+  const comparison = await bcrypt.compare(candidatePassword, this.password);
+  return comparison;
+};
 
 const UserModel = mongoose.model('User', UserSchema);
 

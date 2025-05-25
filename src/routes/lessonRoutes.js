@@ -1,5 +1,6 @@
 import express from 'express';
 import * as Lessons from '../controllers/lessonController.js';
+import { requireAuth } from '../services/passport.js';
 
 const router = express.Router();
 
@@ -57,11 +58,11 @@ const handleDelete = async (req, res) => {
 
 router.route('/')
   .get(handleGetAll)
-  .post(handleCreate);
+  .post(requireAuth, handleCreate);
 
 router.route('/:id')
   .get(handleGetSingle)
-  .put(handleUpdate)
-  .delete(handleDelete);
+  .put(requireAuth, handleUpdate)
+  .delete(requireAuth, handleDelete);
 
 export default router;

@@ -18,24 +18,55 @@
  * - Activity logging
  */
 
+import jwt from 'jwt-simple';
+import dotenv from 'dotenv';
 import User from '../models/User.js';
 
-export async function createUser(userFields) {
-  const user = new User();
-  user.email = userFields.email;
-  user.password = userFields.password; // need to hash this
-  user.role = userFields.role;
-  user.firstName = userFields.firstName;
-  user.lastName = userFields.lastName;
-  user.school = userFields.school;
-  user.folders = userFields.folders;
-  try {
-    const saveduser = await user.save();
-    return saveduser;
-  } catch (error) {
-    throw new Error(`create user error: ${error.message}`);
-  }
+dotenv.config({ silent: true });
+
+// encodes a new token for a user object
+function tokenForUser(user) {
+  const timestamp = new Date().getTime();
+  return jwt.encode({ sub: user.id, iat: timestamp }, process.env.AUTH_SECRET);
 }
+
+export const signin = (user) => {
+  return tokenForUser(user);
+};
+
+export const getUsername = async ({ userId }) => {
+  const existingUser = await User.findById({ userId });
+  if (existingUser) {
+    return existingUser.username;
+  } else {
+    return null;
+  }
+};
+
+// note the lovely destructuring here indicating that we are passing in an object with these 3 keys
+export const signup = async ({ username, email, password }) => {
+  if (!username || !email || !password) {
+    throw new Error('You must provide username, email and password');
+  }
+
+  // See if a user with the given email exists
+  const existingUser = await User.findOne({ email });
+  if (existingUser) {
+  // If a user with email does exist, return an error
+    throw new Error('Email is in use');
+  }
+
+  const user = new User();
+  user.username = username;
+  user.email = email;
+  user.password = password;
+  user.role = 'Teacher';
+  user.school = 'No School Entered';
+  user.folders = null;
+  await user.save();
+  return tokenForUser(user);
+};
+
 export async function getUsers() {
   try {
     const users = await User.find({});
