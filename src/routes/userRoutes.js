@@ -1,5 +1,6 @@
 import express from 'express';
 import * as Users from '../controllers/userController.js';
+import { requireAuth } from '../services/passport.js';
 
 const router = express.Router();
 
@@ -10,27 +11,9 @@ function handleError(res, error) {
   return res.status(status).json({ error: message });
 }
 
-const handleGetAll = async (req, res) => {
-  try {
-    const result = await Users.getUsers();
-    return res.json(result);
-  } catch (error) {
-    return handleError(res, error);
-  }
-};
-
-const handleCreate = async (req, res) => {
-  try {
-    const result = await Users.createUser(req.body);
-    return res.json(result);
-  } catch (error) {
-    return handleError(res, error);
-  }
-};
-
 const handleGetSingle = async (req, res) => {
   try {
-    const result = await Users.getUser(req.params.id);
+    const result = await Users.getUser(req.user.id);
     return res.json(result);
   } catch (error) {
     return handleError(res, error);
@@ -56,11 +39,7 @@ const handleDelete = async (req, res) => {
 };
 
 router.route('/')
-  .get(handleGetAll)
-  .post(handleCreate);
-
-router.route('/:id')
-  .get(handleGetSingle)
+  .get(requireAuth, handleGetSingle)
   .put(handleUpdate)
   .delete(handleDelete);
 
