@@ -62,7 +62,6 @@ export const signup = async ({ username, email, password }) => {
   user.password = password;
   user.role = 'Teacher';
   user.school = 'No School Entered';
-  user.folders = null;
   await user.save();
   return tokenForUser(user);
 };
@@ -101,7 +100,6 @@ export async function deleteUser(id) {
 }
 export async function updateUser(id, userFields) {
   try {
-    console.log(id);
     const user = await User.findByIdAndUpdate(id, userFields, { new: true }); // set the option new to return updated object
     if (!user) {
       throw new Error(`get user error with id: ${id}}`);
@@ -112,3 +110,99 @@ export async function updateUser(id, userFields) {
     throw error;
   }
 }
+
+export const addFolder = async (userId, folderName) => {
+  try {
+    if (!folderName) {
+      throw new Error('Folder name is required');
+    }
+
+    const user = await User.findById(userId);
+    if (!user) {
+      throw new Error('User not found');
+    }
+    if (user.folders.has(folderName)) {
+      throw new Error('Folder already exists');
+    }
+
+    user.folders.set(folderName, []); // a folder starts off empty
+    await user.save();
+
+    return user;
+  } catch (error) {
+    throw new Error(error.message, error);
+  }
+};
+
+export const removeFolder = async (userId, folderName) => {
+  try {
+    if (!folderName) {
+      throw new Error('Folder name is required');
+    }
+
+    const user = await User.findById(userId);
+    if (!user) {
+      throw new Error('User not found');
+    }
+    if (!user.folders.has(folderName)) {
+      throw new Error('Folder does not exist');
+    }
+
+    user.folders.delete(folderName);
+    await user.save();
+
+    return user;
+  } catch (error) {
+    throw new Error(error.message, error);
+  }
+};
+
+export const addLessonToFolder = async (userId, folderName, lessonId) => {
+  try {
+    const user = await User.findById(userId);
+    if (!user) throw new Error('User not found');
+
+    if (!user.folders.has(folderName)) {
+      throw new Error('Folder not found');
+    }
+
+    const folderLessons = user.folders.get(folderName);
+    if (!folderLessons.includes(lessonId)) {
+      folderLessons.push(lessonId);
+      user.folders.set(folderName, folderLessons);
+      await user.save();
+    } else {
+      throw new Error('That lesson is already in this folder');
+    }
+
+    return user;
+  } catch (error) {
+    throw new Error(error.message, error);
+  }
+};
+
+export const removeLessonFromFolder = async (userId, folderName, lessonId) => {
+  try {
+    const user = await User.findById(userId);
+    if (!user) throw new Error('User not found');
+
+    if (!user.folders.has(folderName)) {
+      throw new Error('Folder not found');
+    }
+
+    const folderLessons = user.folders.get(folderName);
+    if (folderLessons.includes(lessonId)) {
+      const updatedLessons = folderLessons.filter(
+        (lesson) => { return lesson.toString() !== lessonId.toString(); },
+      );
+      user.folders.set(folderName, updatedLessons);
+      await user.save();
+    } else {
+      throw new Error('That lesson does not exist in the folder');
+    }
+
+    return user;
+  } catch (error) {
+    throw new Error(error.message, error);
+  }
+};

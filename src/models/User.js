@@ -35,12 +35,7 @@ const UserSchema = new Schema({
   // folder is a list of dictionaries, key=name of the folder, value=id of lesson
   folders: {
     type: Map,
-    of: [
-      {
-        type: Schema.Types.ObjectId,
-        ref: 'Lesson',
-      },
-    ],
+    of: [{ type: Schema.Types.ObjectId, ref: 'Lesson' }],
     default: {},
   },
 }, {

@@ -22,7 +22,6 @@ const handleGetSingle = async (req, res) => {
 
 const handleUpdate = async (req, res) => {
   try {
-    console.log(req.user);
     const result = await Users.updateUser(req.user.id, req.body);
     return res.json(result);
   } catch (error) {
@@ -39,9 +38,53 @@ const handleDelete = async (req, res) => {
   }
 };
 
+const handleAddFolder = async (req, res) => {
+  try {
+    const result = await Users.addFolder(req.user.id, req.body.foldername);
+    return res.json(result);
+  } catch (error) {
+    return handleError(res, error);
+  }
+};
+
+const handleAddLessonToFolder = async (req, res) => {
+  try {
+    const result = await Users.addLessonToFolder(req.user.id, req.body.foldername, req.body.lessonId);
+    return res.json(result);
+  } catch (error) {
+    return handleError(res, error);
+  }
+};
+
+const handleRemoveFolder = async (req, res) => {
+  try {
+    const result = await Users.removeFolder(req.user.id, req.body.foldername);
+    return res.json(result);
+  } catch (error) {
+    return handleError(res, error);
+  }
+};
+
+const handleRemoveLessonFromFolder = async (req, res) => {
+  try {
+    const result = await Users.removeLessonFromFolder(req.user.id, req.body.foldername, req.body.lessonId);
+    return res.json(result);
+  } catch (error) {
+    return handleError(res, error);
+  }
+};
+
 router.route('/')
   .get(requireAuth, handleGetSingle)
   .put(requireAuth, handleUpdate)
   .delete(requireAuth, handleDelete);
+
+router.route('/folders')
+  .post(requireAuth, handleAddFolder)
+  .put(requireAuth, handleAddLessonToFolder)
+  .delete(requireAuth, handleRemoveFolder);
+
+router.route('/folders/lesson')
+  .delete(requireAuth, handleRemoveLessonFromFolder);
 
 export default router;
