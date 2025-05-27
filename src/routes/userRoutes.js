@@ -22,7 +22,8 @@ const handleGetSingle = async (req, res) => {
 
 const handleUpdate = async (req, res) => {
   try {
-    const result = await Users.updateUser(req.params.id, req.body);
+    console.log(req.user);
+    const result = await Users.updateUser(req.user.id, req.body);
     return res.json(result);
   } catch (error) {
     return handleError(res, error);
@@ -31,7 +32,7 @@ const handleUpdate = async (req, res) => {
 
 const handleDelete = async (req, res) => {
   try {
-    const result = await Users.deleteUser(req.params.id);
+    const result = await Users.deleteUser(req.user.id);
     return res.json(result);
   } catch (error) {
     return handleError(res, error);
@@ -40,7 +41,7 @@ const handleDelete = async (req, res) => {
 
 router.route('/')
   .get(requireAuth, handleGetSingle)
-  .put(handleUpdate)
-  .delete(handleDelete);
+  .put(requireAuth, handleUpdate)
+  .delete(requireAuth, handleDelete);
 
 export default router;
