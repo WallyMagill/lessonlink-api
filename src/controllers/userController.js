@@ -134,6 +134,29 @@ export const addFolder = async (userId, folderName) => {
   }
 };
 
+export const removeFolder = async (userId, folderName) => {
+  try {
+    if (!folderName) {
+      throw new Error('Folder name is required');
+    }
+
+    const user = await User.findById(userId);
+    if (!user) {
+      throw new Error('User not found');
+    }
+    if (!user.folders.has(folderName)) {
+      throw new Error('Folder does not exist');
+    }
+
+    user.folders.delete(folderName);
+    await user.save();
+
+    return user;
+  } catch (error) {
+    throw new Error(error.message, error);
+  }
+};
+
 export const addLessonToFolder = async (userId, folderName, lessonId) => {
   try {
     const user = await User.findById(userId);
@@ -150,6 +173,32 @@ export const addLessonToFolder = async (userId, folderName, lessonId) => {
       await user.save();
     } else {
       throw new Error('That lesson is already in this folder');
+    }
+
+    return user;
+  } catch (error) {
+    throw new Error(error.message, error);
+  }
+};
+
+export const removeLessonFromFolder = async (userId, folderName, lessonId) => {
+  try {
+    const user = await User.findById(userId);
+    if (!user) throw new Error('User not found');
+
+    if (!user.folders.has(folderName)) {
+      throw new Error('Folder not found');
+    }
+
+    const folderLessons = user.folders.get(folderName);
+    if (folderLessons.includes(lessonId)) {
+      const updatedLessons = folderLessons.filter(
+        (lesson) => { return lesson.toString() !== lessonId.toString(); },
+      );
+      user.folders.set(folderName, updatedLessons);
+      await user.save();
+    } else {
+      throw new Error('That lesson does not exist in the folder');
     }
 
     return user;
