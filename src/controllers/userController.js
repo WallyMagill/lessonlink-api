@@ -101,6 +101,7 @@ export async function deleteUser(id) {
 }
 export async function updateUser(id, userFields) {
   try {
+    console.log(id);
     const user = await User.findByIdAndUpdate(id, userFields, { new: true }); // set the option new to return updated object
     if (!user) {
       throw new Error(`get user error with id: ${id}}`);
