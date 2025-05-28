@@ -13,7 +13,8 @@ function handleError(res, error) {
 
 const handleGetAll = async (req, res) => {
   try {
-    const result = await Lessons.getLessons();
+    const userId = req.user?.id || null;
+    const result = await Lessons.getLessons(userId);
     return res.json(result);
   } catch (error) {
     return handleError(res, error);
@@ -22,7 +23,7 @@ const handleGetAll = async (req, res) => {
 
 const handleCreate = async (req, res) => {
   try {
-    const result = await Lessons.createLesson(req.body);
+    const result = await Lessons.createLesson(req.user.id, req.body);
     return res.json(result);
   } catch (error) {
     return handleError(res, error);
@@ -56,13 +57,27 @@ const handleDelete = async (req, res) => {
   }
 };
 
+const handleShareLesson = async (req, res) => {
+  try {
+    const { email } = req.body;
+    const lessonId = req.params.id;
+
+    const result = await Lessons.shareLessonWithEmail(lessonId, email);
+    return res.json(result);
+  } catch (error) {
+    return handleError(res, error);
+  }
+};
 router.route('/')
-  .get(handleGetAll)
+  .get(requireAuth, handleGetAll)
   .post(requireAuth, handleCreate);
 
 router.route('/:id')
   .get(handleGetSingle)
   .put(requireAuth, handleUpdate)
   .delete(requireAuth, handleDelete);
+
+router.route('/:id/share')
+  .post(requireAuth, handleShareLesson);
 
 export default router;
