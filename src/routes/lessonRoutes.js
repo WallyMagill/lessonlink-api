@@ -21,6 +21,15 @@ const handleGetAll = async (req, res) => {
   }
 };
 
+const handleGetPublic = async (req, res) => {
+  try {
+    const result = await Lessons.getLessons(null);
+    return res.json(result);
+  } catch (error) {
+    return handleError(res, error);
+  }
+};
+
 const handleCreate = async (req, res) => {
   try {
     const result = await Lessons.createLesson(req.user.id, req.body);
@@ -71,6 +80,9 @@ const handleShareLesson = async (req, res) => {
 router.route('/')
   .get(requireAuth, handleGetAll)
   .post(requireAuth, handleCreate);
+
+router.route('/public')
+  .get(handleGetPublic);
 
 router.route('/:id')
   .get(handleGetSingle)
