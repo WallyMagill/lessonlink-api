@@ -24,20 +24,10 @@ import mongoose, { Schema } from 'mongoose';
 
 const StandardSchema = new Schema({
   subject: String,
-  objectives: String,
-  overview: String,
-  tag: String,
-  materials: [String],
-  steps: [String],
-  standards: [String],
-  grade: Number,
-  subject: String,
-  // below based on https://stackoverflow.com/questions/44147927/use-number-or-objectid-when-storing-a-reference-to-another-document-using-mongoo
-  author: { type: Schema.Types.ObjectId, ref: 'User' }, // we store the teacher as their id
-  status: { type: String, enum: ['private', 'shared'], default: 'private' }, // two options for status
-  shared: [{ type: Schema.Types.ObjectId, ref: 'User' }],
-  forkedFrom: [{ type: Schema.Types.ObjectId, ref: 'Lesson' }],
-  feedback: [String],
+  grade: String,
+  domain: String,
+  anchorStandard: String,
+  standardCode: String,
 }, {
   // these allow us to make our own functions of sorts within the schema
   timestamps: true,
@@ -45,6 +35,6 @@ const StandardSchema = new Schema({
   toJSON: { virtuals: true },
 });
 
-const LessonModel = mongoose.model('Lesson', LessonSchema);
+const StandardModel = mongoose.model('Standard', StandardSchema);
 
-export default LessonModel;
+export default StandardModel;
