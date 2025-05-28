@@ -149,7 +149,6 @@ export async function shareLessonWithEmail(lessonId, email) {
     lesson.shared.push(userToShare._id);
     await lesson.save();
   }
-  console.log(lesson);
 
   return lesson;
 }
