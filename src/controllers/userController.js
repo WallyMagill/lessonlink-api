@@ -62,6 +62,7 @@ export const signup = async ({ username, email, password }) => {
   user.password = password;
   user.role = 'Teacher';
   user.school = 'No School Entered';
+  user.theme = true;
   await user.save();
   return tokenForUser(user);
 };
@@ -202,6 +203,21 @@ export const removeLessonFromFolder = async (userId, folderName, lessonId) => {
     }
 
     return user;
+  } catch (error) {
+    throw new Error(error.message, error);
+  }
+};
+
+export const toggleTheme = async (userId) => {
+  try {
+    const user = await User.findById(userId);
+    if (user) {
+      user.theme = !user.theme;
+      await user.save();
+      return user.theme;
+    } else {
+      throw new Error('User not found');
+    }
   } catch (error) {
     throw new Error(error.message, error);
   }
