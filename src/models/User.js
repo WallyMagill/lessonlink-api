@@ -32,6 +32,8 @@ const UserSchema = new Schema({
   role: String,
   username: String,
   school: String,
+  grades: [String],
+  subjects: [String],
   theme: Boolean,
   // folder is a list of dictionaries, key=name of the folder, value=id of lesson
   folders: {
