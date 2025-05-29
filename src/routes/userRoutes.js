@@ -74,10 +74,22 @@ const handleRemoveLessonFromFolder = async (req, res) => {
   }
 };
 
+const handleToggle = async (req, res) => {
+  try {
+    const result = await Users.toggleTheme(req.user?.id);
+    return res.json(result);
+  } catch (error) {
+    return handleError(res, error);
+  }
+};
+
 router.route('/')
   .get(requireAuth, handleGetSingle)
   .put(requireAuth, handleUpdate)
   .delete(requireAuth, handleDelete);
+
+router.route('/theme')
+  .put(requireAuth, handleToggle);
 
 router.route('/folders')
   .post(requireAuth, handleAddFolder)
