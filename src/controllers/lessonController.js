@@ -84,14 +84,20 @@ export async function getLesson(id) {
     throw error;
   }
 }
-export async function deleteLesson(id) {
+export async function deleteLesson(userId, lessonId) {
   try {
-    const lesson = await Lesson.findByIdAndDelete(id);
-    if (!lesson) {
-      throw new Error(`get lesson error with id: ${id}}`);
+    const lesson = await Lesson.findById(lessonId);
+    const objectId = new mongoose.Types.ObjectId(`${userId}`);
+    if (!lesson.author.equals(objectId)) {
+      throw new Error('User does not have this authority');
     }
-    return lesson;
+    if (!lesson) {
+      throw new Error(`get lesson error with id: ${lessonId}}`);
+    }
+    const deleted = await Lesson.findByIdAndDelete(lessonId);
+    return deleted;
   } catch (error) { // !!! TODO
+    console.log(error.message);
     error.statusCode = 404;
     throw error;
   }
