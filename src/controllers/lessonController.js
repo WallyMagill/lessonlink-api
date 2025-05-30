@@ -39,7 +39,6 @@ export async function createLesson(userId, lessonFields) {
   lesson.shared = lessonFields.shared;
   lesson.forkedFrom = lessonFields.forkedFrom;
   lesson.feedback = lessonFields.feedback;
-  lesson.custom = '';
   try {
     const savedlesson = await lesson.save();
     return savedlesson;
