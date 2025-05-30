@@ -50,7 +50,7 @@ const handleGetSingle = async (req, res) => {
 
 const handleUpdate = async (req, res) => {
   try {
-    const result = await Lessons.updateLesson(req.params.id, req.body);
+    const result = await Lessons.updateLesson(req.user?.id, req.params.id, req.body);
     return res.json(result);
   } catch (error) {
     return handleError(res, error);
@@ -59,7 +59,7 @@ const handleUpdate = async (req, res) => {
 
 const handleDelete = async (req, res) => {
   try {
-    const result = await Lessons.deleteLesson(req.params.id);
+    const result = await Lessons.deleteLesson(req.user.id, req.params.id);
     return res.json(result);
   } catch (error) {
     return handleError(res, error);
