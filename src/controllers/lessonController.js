@@ -49,7 +49,9 @@ export async function createLesson(userId, lessonFields) {
 export async function getLessons(userId) {
   try {
     if (!userId) {
-      return await Lesson.find({ status: 'public' });
+      return await Lesson.find({ status: 'public' })
+        .populate('author', 'username')
+        .exec();
     } else {
       const objectId = new mongoose.Types.ObjectId(`${userId}`);
 
@@ -60,7 +62,9 @@ export async function getLessons(userId) {
           { shared: objectId },
         ],
       };
-      return await Lesson.find(query);
+      return await Lesson.find(query)
+        .populate('author', 'username')
+        .exec();
     }
   } catch (error) {
     throw new Error(`couldn't find lessons: ${error.message}`);
@@ -68,7 +72,9 @@ export async function getLessons(userId) {
 }
 export async function getLesson(id) {
   try {
-    const lesson = await Lesson.findById(id);
+    const lesson = await Lesson.findById(id)
+      .populate('author', 'username')
+      .exec();
     if (!lesson) {
       throw new Error(`get lesson error with id: ${id}}`);
     }
