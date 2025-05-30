@@ -41,6 +41,7 @@ const LessonSchema = new Schema({
   standards: [String],
   grade: Number,
   subject: String,
+  content: { type: String, default: '' },
   // below based on https://stackoverflow.com/questions/44147927/use-number-or-objectid-when-storing-a-reference-to-another-document-using-mongoo
   author: { type: Schema.Types.ObjectId, ref: 'User' }, // we store the teacher as their id
   status: { type: String, enum: ['public', 'protected'], default: 'public' }, // two options for status

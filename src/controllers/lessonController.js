@@ -115,6 +115,7 @@ export async function updateLesson(id, lessonFields) {
       'subject',
       'status',
       'feedback',
+      'custom',
     ];
 
     // Apply only allowed fields
