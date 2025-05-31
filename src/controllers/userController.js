@@ -215,6 +215,31 @@ export const removeLessonFromFolder = async (userId, folderName, lessonId) => {
   }
 };
 
+export const renameFolder = async (userId, oldName, newName) => {
+  try {
+    const user = await User.findById(userId);
+    if (!user) throw new Error('User not found');
+
+    if (!user.folders || !user.folders.get(oldName)) {
+      throw new Error('Folder not found');
+    }
+
+    if (user.folders.get(newName)) {
+      throw new Error('A folder with that name already exists');
+    }
+
+    const folderLessons = user.folders.get(oldName);
+    user.folders.set(newName, folderLessons);
+    user.folders.delete(oldName);
+    await user.save();
+
+    return user;
+  } catch (error) {
+    console.error('Rename folder error:', error);
+    throw new Error(`Rename folder failed: ${error.message}`);
+  }
+};
+
 export const toggleTheme = async (userId) => {
   try {
     const user = await User.findById(userId);
