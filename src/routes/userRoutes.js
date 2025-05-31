@@ -65,6 +65,15 @@ const handleRemoveFolder = async (req, res) => {
   }
 };
 
+const handleRenameFolder = async (req, res) => {
+  try {
+    const result = await Users.renameFolder(req.user.id, req.body.oldName, req.body.newName);
+    return res.json(result);
+  } catch (error) {
+    return handleError(res, error);
+  }
+};
+
 const handleRemoveLessonFromFolder = async (req, res) => {
   try {
     const result = await Users.removeLessonFromFolder(req.user.id, req.body.foldername, req.body.lessonId);
@@ -95,6 +104,9 @@ router.route('/folders')
   .post(requireAuth, handleAddFolder)
   .put(requireAuth, handleAddLessonToFolder)
   .delete(requireAuth, handleRemoveFolder);
+
+router.route('/folders/rename')
+  .put(requireAuth, handleRenameFolder);
 
 router.route('/folders/lesson')
   .delete(requireAuth, handleRemoveLessonFromFolder);
