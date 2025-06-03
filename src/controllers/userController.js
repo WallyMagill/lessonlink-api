@@ -79,18 +79,23 @@ export async function getUsers() {
     const users = await User.find({});
     return users;
   } catch (error) {
-    throw new Error(`couldn't find users: ${error.message}`);
+    console.error('Failed to fetch users:', error.message);
+    error.statusCode = 500;
+    throw error;
   }
 }
 export async function getUser(id) {
   try {
     const user = await User.findById(id);
     if (!user) {
-      throw new Error(`get user error with id: ${id}}`);
+      const error = new Error(`User not found with id: ${id}`);
+      error.statusCode = 404;
+      throw error;
     }
     return user;
-  } catch (error) { // !!! TODO This needs to be more sophisticated
-    error.statusCode = 404;
+  } catch (error) {
+    console.error(error.message);
+    if (!error.statusCode) error.statusCode = 500;
     throw error;
   }
 }
@@ -98,11 +103,14 @@ export async function deleteUser(id) {
   try {
     const user = await User.findByIdAndDelete(id);
     if (!user) {
-      throw new Error(`get user error with id: ${id}}`);
+      const error = new Error(`User not found with id: ${id}`);
+      error.statusCode = 404;
+      throw error;
     }
     return user;
-  } catch (error) { // !!! TODO This needs to be more sophisticated
-    error.statusCode = 404;
+  } catch (error) {
+    console.error(error.message);
+    if (!error.statusCode) error.statusCode = 500;
     throw error;
   }
 }
@@ -110,11 +118,14 @@ export async function updateUser(id, userFields) {
   try {
     const user = await User.findByIdAndUpdate(id, userFields, { new: true }); // set the option new to return updated object
     if (!user) {
-      throw new Error(`get user error with id: ${id}}`);
+      const error = new Error(`User not found with id: ${id}`);
+      error.statusCode = 404;
+      throw error;
     }
     return user;
-  } catch (error) { // !!! TODO This needs to be more sophisticated
-    error.statusCode = 404;
+  } catch (error) {
+    console.error(error.message);
+    if (!error.statusCode) error.statusCode = 500;
     throw error;
   }
 }
@@ -138,7 +149,9 @@ export const addFolder = async (userId, folderName) => {
 
     return user;
   } catch (error) {
-    throw new Error(error.message, error);
+    console.error('Add folder error:', error.message);
+    error.statusCode = 400;
+    throw error;
   }
 };
 
@@ -161,7 +174,9 @@ export const removeFolder = async (userId, folderName) => {
 
     return user;
   } catch (error) {
-    throw new Error(error.message, error);
+    console.error('Add folder error:', error.message);
+    error.statusCode = 400;
+    throw error;
   }
 };
 
@@ -251,6 +266,8 @@ export const toggleTheme = async (userId) => {
       throw new Error('User not found');
     }
   } catch (error) {
-    throw new Error(error.message, error);
+    console.error('Toggle theme error:', error.message);
+    error.statusCode = 400;
+    throw error;
   }
 };

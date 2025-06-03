@@ -20,7 +20,7 @@
  * - Standards linking
  */
 import mongoose from 'mongoose';
-import User from '../models/User.js'; // or wherever your User model is
+import User from '../models/User.js';
 import Lesson from '../models/Lesson.js';
 
 export async function createLesson(userId, lessonFields) {
@@ -76,11 +76,16 @@ export async function getLesson(id) {
       .populate('author', 'username')
       .exec();
     if (!lesson) {
-      throw new Error(`get lesson error with id: ${id}}`);
+      const notFoundError = new Error(`Lesson not found with id: ${id}`);
+      notFoundError.statusCode = 404;
+      throw notFoundError;
     }
+
     return lesson;
-  } catch (error) { // !!! TODO This needs to be more sophisticated
-    error.statusCode = 404;
+  } catch (error) {
+    if (!error.statusCode) {
+      error.statusCode = 500;
+    }
     throw error;
   }
 }
@@ -88,32 +93,40 @@ export async function deleteLesson(userId, lessonId) {
   try {
     const lesson = await Lesson.findById(lessonId);
     const objectId = new mongoose.Types.ObjectId(`${userId}`);
-    if (!lesson.author.equals(objectId)) {
-      throw new Error('User does not have this authority');
-    }
     if (!lesson) {
-      throw new Error(`get lesson error with id: ${lessonId}}`);
+      const error = new Error(`Lesson not found with id: ${lessonId}`);
+      error.statusCode = 404;
+      throw error;
     }
+    if (!lesson.author.equals(objectId)) {
+      const error = new Error('User does not have this authority');
+      error.statusCode = 403;
+      throw error;
+    }
+
     const deleted = await Lesson.findByIdAndDelete(lessonId);
     return deleted;
-  } catch (error) { // !!! TODO
-    console.log(error.message);
-    error.statusCode = 404;
+  } catch (error) {
+    console.error(error.message);
+    if (!error.statusCode) {
+      error.statusCode = 500;
+    }
     throw error;
   }
 }
 export async function updateLesson(userId, lessonId, lessonFields) {
   try {
-    console.log(userId);
     const lesson = await Lesson.findById(lessonId);
     if (!lesson) {
-      throw new Error(`Lesson not found with id: ${lessonId}`);
+      const error = new Error(`Lesson not found with id: ${lessonId}`);
+      error.statusCode = 404;
+      throw error;
     }
-    console.log(lesson.author);
     const objectId = new mongoose.Types.ObjectId(`${userId}`);
-    console.log(objectId);
     if (!lesson.author.equals(objectId)) {
-      throw new Error('User does not have this authority');
+      const error = new Error('You are not authorized to update this lesson');
+      error.statusCode = 403;
+      throw error;
     }
 
     // Allowlist of fields that can be updated
@@ -140,43 +153,43 @@ export async function updateLesson(userId, lessonId, lessonFields) {
     });
 
     const savedLesson = await lesson.save();
-    if (!savedLesson) {
-      throw new Error(`get lesson error with id: ${userId}}`);
-    }
     return savedLesson;
-  } catch (error) { // !!! TODO
-    console.log(error.message);
-    error.statusCode = 404;
+  } catch (error) {
+    console.error(error.message);
+    if (!error.statusCode) {
+      error.statusCode = 500;
+    }
     throw error;
   }
 }
 
 export async function shareLessonWithEmail(lessonId, email) {
-  const userToShare = await User.findOne({ email });
+  try {
+    const userToShare = await User.findOne({ email });
+    if (!userToShare) {
+      const error = new Error('User with that email does not exist');
+      error.statusCode = 404;
+      throw error;
+    }
 
-  if (!userToShare) {
-    const error = new Error('User with that email does not exist');
-    error.statusCode = 404;
+    const lesson = await Lesson.findById(lessonId);
+    if (!lesson) {
+      const error = new Error('Lesson not found');
+      error.statusCode = 404;
+      throw error;
+    }
+
+    if (!lesson.shared.includes(userToShare._id)) {
+      lesson.shared.push(userToShare._id);
+      await lesson.save();
+    }
+
+    return lesson;
+  } catch (error) {
+    console.error(error.message);
+    if (!error.statusCode) {
+      error.statusCode = 500;
+    }
     throw error;
   }
-
-  const lesson = await Lesson.findById(lessonId);
-  if (!lesson) {
-    const error = new Error('Lesson not found');
-    error.statusCode = 404;
-    throw error;
-  }
-
-  if (!lesson.shared.includes(userToShare._id)) {
-    lesson.shared.push(userToShare._id);
-    await lesson.save();
-  }
-
-  return lesson;
-}
-
-// THIS FUNCTION MUST ADD THE AUTHOR OF THE LESSON BEING FORKED TO SHARED OF THIS NEW LESSON
-export async function forkLesson(userId, lessonId) {
-  // TODO !!!
-  return null;
 }

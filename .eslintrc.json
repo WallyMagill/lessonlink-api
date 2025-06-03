@@ -29,6 +29,15 @@
         "caseSensitive": false
       }
     ],
+    "import/extensions": [
+      "error",
+      "ignorePackages",
+      {
+        "js": "always",
+        "mjs": "always",
+        "jsx": "always"
+      }
+    ],
     "no-unused-vars": [
       "error",
       {
