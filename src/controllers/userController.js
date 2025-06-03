@@ -53,14 +53,14 @@ export const signup = async ({ username, email, password }) => {
   const existingUser = await User.findOne({ email });
   if (existingUser) {
   // If a user with email does exist, return an error
-    throw new Error('Email is in use');
+    throw new Error('An account with this email already exists.');
   }
 
   const existingUsername = await User.findOne({ username });
 
   if (existingUsername) {
   // If a user with email does exist, return an error
-    throw new Error('Username is in use');
+    throw new Error('An account with this username already exists.');
   }
 
   const user = new User();

@@ -21,7 +21,10 @@ const handleSignup = async (req, res) => {
     console.log(req);
     res.json({ token, email: req.body.email });
   } catch (error) {
-    res.status(422).send({ error: error.toString() });
+    // res.status(422).send({ error: error.toString() });
+    res.status(400).json({
+      message: error.message || 'Signup failed. Please try again.',
+    });
   }
 };
 
