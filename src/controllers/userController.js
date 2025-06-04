@@ -69,7 +69,7 @@ export const signup = async ({ username, email, password }) => {
   user.password = password;
   user.role = 'Teacher';
   user.school = 'No School Entered';
-  user.theme = true;
+  user.theme = false;
   await user.save();
   return tokenForUser(user);
 };
