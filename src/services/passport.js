@@ -23,23 +23,17 @@ const jwtOptions = {
 
 // username/email + password authentication strategy
 const localLogin = new LocalStrategy(localOptions, async (email, password, done) => {
-  let user;
-  let isMatch;
-
   try {
-    // try to find a user by email
-    user = await User.findOne({ email });
-    if (!user) { // if there is no user with that email we return false
-      return done(null, false);
+    const user = await User.findOne({ email });
+    if (!user) {
+      return done(null, false, { message: 'No account found with this email.' });
     }
-    // compare the user submitted password with their actual password
-    isMatch = await user.comparePassword(password);
-    if (!isMatch) { // if it doesn't match they failed auth
-      return done(null, false);
-    } else { // the passwords match so we return the user object
-      return done(null, user);
+    const isMatch = await user.comparePassword(password);
+    if (!isMatch) {
+      return done(null, false, { message: 'Incorrect password.' });
     }
-  } catch (error) { // if there are any erros we return them
+    return done(null, user);
+  } catch (error) {
     return done(error);
   }
 });
@@ -67,4 +61,21 @@ passport.use(localLogin); // for 'local'
 
 // middleware functions to use in routes
 export const requireAuth = passport.authenticate('jwt', { session: false });
-export const requireSignin = passport.authenticate('local', { session: false });
+export const requireSignin = (req, res, next) => {
+  passport.authenticate('local', { session: false }, (err, user, info) => {
+    if (err) {
+      console.error('Error:', err);
+      return res.status(500).json({ error: 'An internal error occured.' });
+    }
+
+    if (!user) {
+      return res.status(401).json({
+        error: info?.message || 'Invalid email or password.',
+      });
+    }
+    req.user = user;
+    next();
+  })(req, res, next);
+};
+
+passport.authenticate('local', { session: false });
