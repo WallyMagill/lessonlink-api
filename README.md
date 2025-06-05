@@ -5,14 +5,14 @@ This is the backend API for the LessonLink platform, a modern web application de
 Hosted Link: https://project-api-lessonlink.onrender.com
 
 ## Project Structure
-
-- `models/`: MongoDB schemas for Users, Lessons, Classes, and Feedback
-- `controllers/`: Business logic for handling API requests
-- `routes/`: Express route definitions for API endpoints
-- `middlewares/`: Authentication and error handling middleware
-- `config/`: Database and environment configuration
-- `app.js`: Express application setup
-- `server.js`: Server entry point
+- `src/`: Source code directory
+    - `config/`: Database and environment configuration
+    - `controllers/`: Logic for handling API requests
+    - `middlewares/`: Authentication middleware
+    - `models/`: MongoDB schemas for Users, Lessons, and Standards
+    - `routes/`: Express route definitions for API endpoints
+    - `services/`: Handles auth related logic
+    - `server.js`: Server entry point
 
 ## Setup Instructions
 
@@ -22,16 +22,13 @@ Hosted Link: https://project-api-lessonlink.onrender.com
 
 ## API Endpoints
 
-- `/api/auth`: Authentication routes (login, register)
+- `/api/auth`: Authentication routes (login, signup)
 - `/api/users`: User management routes
 - `/api/lessons`: Lesson plan CRUD operations
-- `/api/classes`: Class management routes
-- `/api/feedback`: Substitute feedback routes
+- `/api/standards`: Standard related routes
 
-## Development Guidelines
-
-- Follow RESTful API design principles
-- Implement proper error handling and validation
-- Use JWT for authentication
-- Document all API endpoints
-- Write tests for critical functionality
+## Key Features (what we serve)
+- Serves lessons based on lesson visibility
+- Serves User data based on user
+- Serves Standards
+- Handles auth related logic
