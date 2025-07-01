@@ -1,8 +1,26 @@
 # LessonLink API
 
+⚠️ **This is a public copy of a collaborative academic project. Intended for portfolio review only.**
+
 This is the backend API for the LessonLink platform, a modern web application designed to streamline lesson planning for K-12 educators.
 
-Hosted Link: https://project-api-lessonlink.onrender.com
+**Hosted Demo:** https://project-api-lessonlink.onrender.com
+
+## Tech Stack
+- **Runtime:** Node.js with Express.js
+- **Database:** MongoDB with Mongoose ODM
+- **Authentication:** JWT tokens with Passport.js
+- **Deployment:** Render.com
+- **Environment:** Environment variables for configuration
+
+## Team Contributions
+
+This project was developed collaboratively with the following contributions:
+
+- **Wally Magill:** API route architecture, frontend-backend integration, authentication flow, and lesson filtering logic
+- **[Teammate A]:** MongoDB data modeling, database schemas, and standards endpoints
+- **[Teammate B]:** Authentication middleware, JWT token implementation, and security logic
+- **[Teammate C]:** User management endpoints and data validation
 
 ## Project Structure
 - `src/`: Source code directory;
